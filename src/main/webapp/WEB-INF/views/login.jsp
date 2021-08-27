@@ -7,10 +7,11 @@
 <title>Login</title>
 </head>
 <body>
-<form method="get" action="/join">
+<!-- <form method="post" action="/checkuser">
 	ID : <input type="text" name="userid"><br>
 	PW : <input type="password" name="userpw"><br><br>
 	<input type="submit" value="로그인">
-</form>
+	<input type="button" value="취소" onclick="location.href='/'">
+</form> -->
 </body>
 </html>
