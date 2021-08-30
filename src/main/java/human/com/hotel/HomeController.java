@@ -1,6 +1,7 @@
 package human.com.hotel;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -8,8 +9,10 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class HomeController {
+	
+	@Autowired
+	private SqlSession sqlSession;
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home() {
@@ -43,6 +49,7 @@ public class HomeController {
 		model.addAttribute("loginid", uid);
 		model.addAttribute("loginpw", upw);
 		
+		//DB에서 유저확인 - 기존유저면 booking.jsp, 신규면 home으로
 		HttpSession session = hsr.getSession();
 		session.setAttribute("loginid", uid);
 
@@ -93,11 +100,15 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value="/room") 
-	public String goRoom(HttpServletRequest hsr) {
+	public String goRoom(HttpServletRequest hsr, Model model) {
 		HttpSession session = hsr.getSession();
 		if(session.getAttribute("loginid")==null) {
 			return "redirect:/home";
-		} else {		
+		} else {
+			//interface 호출하고 결과를 room.jsp에 전달
+			iRoom room = sqlSession.getMapper(iRoom.class);
+			ArrayList<Roominfo> roominfo=room.getRoomList();
+			model.addAttribute("list", roominfo);
 			return "room";
 		}
 	}

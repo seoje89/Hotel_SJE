@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -64,8 +65,9 @@
             <th style="text-align: left;"><h3>객실목록</h3></th>
             <tr></tr>
             <td><select size="10" style="font-size: 16px; background-color: white; width: 200px; height: 350px;">
-                <option>태조산</option>
-              
+                <c:forEach items="${list}" var="room">
+                	<option>${room.roomcode},${room.name},${room.type},${room.howmany},${room.howmuch}</option>
+                </c:forEach>             
             </select></td>
         </table>
     </div>
