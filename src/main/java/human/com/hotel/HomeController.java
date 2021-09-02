@@ -17,6 +17,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 @Controller
 public class HomeController {
@@ -61,10 +64,10 @@ public class HomeController {
 		HttpSession session=hsr.getSession();
 		String loginid=(String)session.getAttribute("loginid");
 		
-		if(!loginid.equals("")) {
-			return "booking"; // JSP파일이름
-		} else {
+		if(loginid==null) {
 			return "redirect:/";
+		} else {
+			return "booking"; // JSP파일이름
 		}
 	}
 	
@@ -107,11 +110,74 @@ public class HomeController {
 		} else {
 			//interface 호출하고 결과를 room.jsp에 전달
 			iRoom room = sqlSession.getMapper(iRoom.class);
-			ArrayList<Roominfo> roominfo=room.getRoomList();
-			model.addAttribute("list", roominfo);
+			
+			//ArrayList<Roominfo> roominfo=room.getRoomList();
+			ArrayList<Roomtype> roomtype=room.getRoomType();
+			
+			//model.addAttribute("list", roominfo);
+			model.addAttribute("rtype", roomtype);
+			
 			return "room";
 		}
 	}
+	@RequestMapping(value="getRoomList", produces="application/text; charset=utf8", method=RequestMethod.POST)
+	@ResponseBody //AJAX 호출에 반응하려면 붙여줘야하는 애노테이션
+	public String getRoomList(HttpServletRequest hsr) {
+		iRoom room=sqlSession.getMapper(iRoom.class);
+		ArrayList<Roominfo> roominfo=room.getRoomList();
+		// 찾아진 데이터로 JSONArray 만들기
+		JSONArray ja = new JSONArray();
+		for(int i=0;i<roominfo.size();i++) {
+			JSONObject jo = new JSONObject();
+			jo.put("roomcode", roominfo.get(i).getRoomcode());
+			jo.put("roomname", roominfo.get(i).getRoomname());
+			jo.put("typename", roominfo.get(i).getTypename());
+			jo.put("howmany", roominfo.get(i).getHowmany());
+			jo.put("howmuch", roominfo.get(i).getHowmuch());
+			ja.add(jo);
+		}
+		return ja.toString();
+	}
+	
+	@RequestMapping(value="deleteRoom", produces="application/text; charset=utf8", method=RequestMethod.POST)
+	@ResponseBody //AJAX 호출에 반응하려면 붙여줘야하는 애노테이션
+	public String deleteRoom(HttpServletRequest hsr) {
+		int roomcode = Integer.parseInt(hsr.getParameter("roomcode"));
+		iRoom room=sqlSession.getMapper(iRoom.class);
+		room.doDeleteRoom(roomcode);
+		
+		return "ok";
+	}
+	
+	@RequestMapping(value="joinRoom", produces="application/text; charset=utf8", method=RequestMethod.POST)
+	@ResponseBody
+	public String joinRoom(HttpServletRequest hsr) {
+		String rname=hsr.getParameter("roomname");
+		int rtype=Integer.parseInt(hsr.getParameter("roomtype"));
+		int rhowmany=Integer.parseInt(hsr.getParameter("howmany"));
+		int rhowmuch=Integer.parseInt(hsr.getParameter("howmuch"));
+		
+		iRoom room=sqlSession.getMapper(iRoom.class);
+		room.doJoinRoom(rname, rtype, rhowmany, rhowmuch);
+		
+		return "ok";
+	}
+	
+	@RequestMapping(value="updateRoom", produces="application/text; charset=utf8", method=RequestMethod.POST)
+	@ResponseBody
+	public String updateRoom(HttpServletRequest hsr) {
+		int rcode=Integer.parseInt(hsr.getParameter("roomcode"));
+		String rname=hsr.getParameter("roomname");
+		int rtype=Integer.parseInt(hsr.getParameter("roomtype"));
+		int rhowmany=Integer.parseInt(hsr.getParameter("howmany"));
+		int rhowmuch=Integer.parseInt(hsr.getParameter("howmuch"));
+		
+		iRoom room=sqlSession.getMapper(iRoom.class);
+		room.doUpdateRoom(rcode, rname, rtype, rhowmany, rhowmuch);
+	
+		return "ok";
+	}
+	
 	@RequestMapping(value="/logout")
 	public String logout(HttpServletRequest hsr) {
 		HttpSession session = hsr.getSession();

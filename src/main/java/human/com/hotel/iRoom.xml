@@ -6,6 +6,25 @@
 <mapper namespace="human.com.hotel.iRoom">
 	<!-- select id="인터페이스의 메소드" resultType="인터페이스의 반환데이터 타입" -->
 	<select id="getRoomList" resultType="human.com.hotel.Roominfo">
-		select roomcode, name, type, howmany, howmuch from room order by name
+		select a.roomcode, a.name roomname, b.name typename, a.howmany, a.howmuch from room a, roomtype b where a.type=b.typecode order by roomcode
 	</select>
+	
+	<select id="getRoomType" resultType="human.com.hotel.Roomtype">
+		select typecode, name from roomtype order by typecode
+	</select>
+	
+	<!-- resultType은 select만 존재(조회해서 보내줘야함), 다른 쿼리문은 리턴할 결과값이 없으므로 resultType이 없다 -->
+	<delete id="doDeleteRoom">
+		delete from room where roomcode=#{param1}
+	</delete>
+	
+	<insert id="doJoinRoom">
+		insert into room (roomcode,name,type,howmany,howmuch) 
+			values (seq_room.nextval,#{param1},#{param2},#{param3},#{param4})
+	</insert>
+	
+	<update id="doUpdateRoom">
+		update room set name=#{param2}, type=#{param3}, howmany=${param4}, howmuch=${param5}
+		where roomcode=#{param1}
+	</update>
 </mapper>
