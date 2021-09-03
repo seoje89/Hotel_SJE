@@ -12,4 +12,8 @@ public interface iRoom {
 	void doJoinRoom(String roomname, int roomtype, int howmany, int howmuch);
 
 	void doUpdateRoom(int roomcode, String roomname, int roomtype, int howmany, int howmuch);
+	
+	void goNewbie(String name, String loginid, String passcode);
+	
+	int doCheckUser(String userid, String passcode);
 }

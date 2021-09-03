@@ -38,13 +38,13 @@
         #reserDetails {
             width: 40%;
             height: 500px;
-            background-color: gray;
+            background-color: #E3ACEF;
             float: left;
         }
         #soldOut {
             width: 30%;
             float: left;
-            background-color: rgb(113, 113, 241);
+            background-color: #A49EFD;
             height: 500px;
             display: flex;
             justify-content: center;
