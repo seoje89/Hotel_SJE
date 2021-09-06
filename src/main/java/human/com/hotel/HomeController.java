@@ -32,6 +32,13 @@ public class HomeController {
 		
 		return "home";
 	}	
+	
+	@RequestMapping(value="/login", method=RequestMethod.GET)
+	public String login() {
+		
+		return "/";
+	}
+	
 //	@RequestMapping(value="/selected")
 //	public String doJob(HttpServletRequest hsr, Model model) {
 //		String strPath=hsr.getParameter("path");
@@ -53,10 +60,17 @@ public class HomeController {
 		model.addAttribute("loginpw", upw);
 		
 		//DB에서 유저확인 - 기존유저면 booking.jsp, 신규면 home으로
-		HttpSession session = hsr.getSession();
-		session.setAttribute("loginid", uid);
+		iRoom member = sqlSession.getMapper(iRoom.class);
+		int n = member.doCheckUser(uid, upw);
+		if(n>0) {
+			HttpSession session = hsr.getSession();
+			session.setAttribute("loginid", uid);
 
-		return "redirect:/booking"; //RequestMapping의 경로이름
+			return "redirect:/booking"; //RequestMapping의 경로이름
+		} else {
+			return "home";
+		}
+		
 	}
 	
 	@RequestMapping(value="/booking", method=RequestMethod.GET)
@@ -73,33 +87,27 @@ public class HomeController {
 	
 	@RequestMapping(value="/newbie")
 	public String doNewbie(Model model, HttpServletRequest hsr) {
-//		String nname=hsr.getParameter("nbname");
-//		String nid=hsr.getParameter("nbid");
-//		String npw=hsr.getParameter("nbpw");
-//		String npwc=hsr.getParameter("nbpwcheck");
-//		String nmobile=hsr.getParameter("nbmobile");
-//		
-//		model.addAttribute("newbieid", nid);
-//		model.addAttribute("newbiepw", npw);
-//		model.addAttribute("newbiename", nname);
-//		model.addAttribute("newbiemobile", nmobile);
-		
+
 		return "newbie";
 	}
-	@RequestMapping(value="/goNewbie", method=RequestMethod.POST)
+	
+	@RequestMapping(value="/goNewbie",produces="application/text; charset=utf8", method=RequestMethod.POST)
 	public String goNewbie(HttpServletRequest hsr, Model model) {
 		String nname=hsr.getParameter("nbname");
 		String nid=hsr.getParameter("nbid");
 		String npw=hsr.getParameter("nbpw");
-		String npwc=hsr.getParameter("nbpwcheck");
-		String nmobile=hsr.getParameter("nbmobile");
+		//String npwc=hsr.getParameter("nbpwcheck");
+		//String nmobile=hsr.getParameter("nbmobile");
 		
-		model.addAttribute("newbieid", nid);
-		model.addAttribute("newbiepw", npw);
-		model.addAttribute("newbiename", nname);
-		model.addAttribute("newbiemobile", nmobile);
+//		model.addAttribute("newbieid", nid);
+//		model.addAttribute("newbiepw", npw);
+//		model.addAttribute("newbiename", nname);
+		//model.addAttribute("newbiemobile", nmobile);
 		
-		return "home";
+		iRoom room = sqlSession.getMapper(iRoom.class);
+		room.goNewbie(nname, nid, npw);
+		
+		return "redirect:/";
 	}
 	
 	@RequestMapping(value="/room") 
@@ -162,7 +170,7 @@ public class HomeController {
 		
 		return "ok";
 	}
-	
+
 	@RequestMapping(value="updateRoom", produces="application/text; charset=utf8", method=RequestMethod.POST)
 	@ResponseBody
 	public String updateRoom(HttpServletRequest hsr) {
@@ -185,5 +193,42 @@ public class HomeController {
 		return "redirect:/";
 	}
 	
+	@RequestMapping(value="getRoomSearch", produces="application/text; charset=utf8", method=RequestMethod.GET)
+	@ResponseBody
+	public String getRoomSearch(HttpServletRequest hsr) {
+		iRoom room = sqlSession.getMapper(iRoom.class);
+		ArrayList<Roominfo> roominfo = room.getRoomList();
+		JSONArray ja = new JSONArray();
+		for(int i=0;i<roominfo.size();i++) {
+			JSONObject jo = new JSONObject();
+			jo.put("roomcode", roominfo.get(i).getRoomcode());
+			jo.put("roomname", roominfo.get(i).getRoomname());
+			jo.put("typename", roominfo.get(i).getTypename());
+			jo.put("howmany", roominfo.get(i).getHowmany());
+			jo.put("howmuch", roominfo.get(i).getHowmuch());
+			ja.add(jo);
+		}
+		return ja.toString();
+	}
+	
+	@RequestMapping(value="reservationRoom", produces="application/text; charset=utf8", method=RequestMethod.GET)
+	@ResponseBody
+	public String reservationRoom(HttpServletRequest hsr) {
+		String rname=hsr.getParameter("roomname");
+		String rtype=hsr.getParameter("roomtype");
+		int rhowmany=Integer.parseInt(hsr.getParameter("howmany"));
+		int rhowmuch=Integer.parseInt(hsr.getParameter("howmuch"));
+		String date1=hsr.getParameter("date1");
+		String date2=hsr.getParameter("date2");
+		int reserhowmany = Integer.parseInt(hsr.getParameter("reserhowmany"));
+		int allprice = Integer.parseInt(hsr.getParameter("allprice"));
+		String resername = hsr.getParameter("resername");
+		String resermobile= hsr.getParameter("resermobile");		
+		
+		iRoom room=sqlSession.getMapper(iRoom.class);
+		room.doReservationRoom(rname, rtype, date1, date2, reserhowmany, rhowmany, rhowmuch, allprice, resername, resermobile);
+		
+		return "ok";
+	}
 	
 }
