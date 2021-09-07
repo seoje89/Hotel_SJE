@@ -74,9 +74,13 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value="/booking", method=RequestMethod.GET)
-	public String gobooking(HttpServletRequest hsr) {
+	public String gobooking(HttpServletRequest hsr, Model model) {
 		HttpSession session=hsr.getSession();
 		String loginid=(String)session.getAttribute("loginid");
+		
+		iRoom room = sqlSession.getMapper(iRoom.class);
+		ArrayList<Roomtype> roomtype=room.getRoomType();
+		model.addAttribute("rtype", roomtype);
 		
 		if(loginid==null) {
 			return "redirect:/";
@@ -197,25 +201,29 @@ public class HomeController {
 	@ResponseBody
 	public String getRoomSearch(HttpServletRequest hsr) {
 		iRoom room = sqlSession.getMapper(iRoom.class);
-		ArrayList<Roominfo> roominfo = room.getRoomList();
+		
+//		String checkin = hsr.getParameter("checkin");
+//		String checkout = hsr.getParameter("checkout");
+				
+		ArrayList<BookOk> bookok = room.getBookOk();
 		JSONArray ja = new JSONArray();
-		for(int i=0;i<roominfo.size();i++) {
+		for(int i=0;i<bookok.size();i++) {
 			JSONObject jo = new JSONObject();
-			jo.put("roomcode", roominfo.get(i).getRoomcode());
-			jo.put("roomname", roominfo.get(i).getRoomname());
-			jo.put("typename", roominfo.get(i).getTypename());
-			jo.put("howmany", roominfo.get(i).getHowmany());
-			jo.put("howmuch", roominfo.get(i).getHowmuch());
+			jo.put("roomcode", bookok.get(i).getRoomcode());
+			jo.put("roomname", bookok.get(i).getRoomname());
+			jo.put("typename", bookok.get(i).getTypename());
+			jo.put("howmany", bookok.get(i).getHowmany());
+			jo.put("howmuch", bookok.get(i).getHowmuch());
 			ja.add(jo);
 		}
 		return ja.toString();
 	}
 	
-	@RequestMapping(value="reservationRoom", produces="application/text; charset=utf8", method=RequestMethod.GET)
+	@RequestMapping(value="reservationRoom", produces="application/text; charset=utf8", method=RequestMethod.POST)
 	@ResponseBody
 	public String reservationRoom(HttpServletRequest hsr) {
 		String rname=hsr.getParameter("roomname");
-		String rtype=hsr.getParameter("roomtype");
+		String rtype=hsr.getParameter("roomtype");		
 		int rhowmany=Integer.parseInt(hsr.getParameter("howmany"));
 		int rhowmuch=Integer.parseInt(hsr.getParameter("howmuch"));
 		String date1=hsr.getParameter("date1");
@@ -231,4 +239,13 @@ public class HomeController {
 		return "ok";
 	}
 	
+	@RequestMapping(value="deleteBook", produces="application/text; charset=utf8", method=RequestMethod.POST)
+	@ResponseBody
+	public String deleteBook(HttpServletRequest hsr) {
+		int bookcode = Integer.parseInt(hsr.getParameter("bookcode"));
+		iRoom book = sqlSession.getMapper(iRoom.class);
+		
+		book.doDeleteBook(bookcode);
+		return "ok";
+	}
 }

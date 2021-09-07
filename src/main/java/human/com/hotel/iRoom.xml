@@ -6,7 +6,9 @@
 <mapper namespace="human.com.hotel.iRoom">
 	<!-- select id="인터페이스의 메소드" resultType="인터페이스의 반환데이터 타입" -->
 	<select id="getRoomList" resultType="human.com.hotel.Roominfo">
-		select a.roomcode, a.name roomname, b.name typename, a.howmany, a.howmuch from room a, roomtype b where a.type=b.typecode order by roomcode
+		select a.roomcode, a.name roomname, b.name typename, a.howmany, a.howmuch
+		 from room a, roomtype b 
+		 where a.type=b.typecode order by roomcode
 	</select>
 	
 	<select id="getRoomType" resultType="human.com.hotel.Roomtype">
@@ -40,8 +42,17 @@
 	
 	<insert id="doReservationRoom">
 		insert into booking (bookcode, roomname, roomtype, checkin, checkout, rperson, person, name, mobile)
-			values (seq_book.nextval,#{param1},#{param2},#{param3},#{param4},#{param5},#{param6},#{param7},#{param8})
+			values (seq_book.nextval,#{param1},#{param2},#{param3},#{param4},#{param5},#{param6},#{param9},#{param10})
 	</insert>
 	
+	<delete id="doDeleteBook">
+		delete from room where bookcode=#{param1}
+	</delete>
+	
+	<select id="getBookOk" resultType="human.com.hotel.BookOk">
+		select a.roomcode, a.name roomname, b.name typename, a.howmany, a.howmuch 
+			from room a, roomtype b 
+			where a.type=b.typecode order by roomcode		
+	</select> 
 	
 </mapper>

@@ -19,4 +19,8 @@ public interface iRoom {
 
 	void doReservationRoom(String rname, String rtype, String date1, String date2, int reserhowmany, int rhowmany,
 			int rhowmuch, int allprice, String resername, String resermobile);
+
+	void doDeleteBook(int bookcode);
+	
+	ArrayList<BookOk> getBookOk();
 }
