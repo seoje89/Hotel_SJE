@@ -118,7 +118,7 @@
             <td><input readonly id="rclass" type="text" style="font-size: 20px; width: 130px;"></td>
             <tr></tr>                
             <td>숙박기간</td>
-            <td><input id="date1" type="date"> ~ <input id="date2" type="date"></td>
+            <td><input readonly id="date1" type="date"> ~ <input readonly id="date2" type="date"></td>
             <tr></tr>
             <td>예약인원</td>
             <td><input id="reserhowmany" type="number" style="font-size: 16px; width: 88px;">명</td>
@@ -161,15 +161,26 @@ $(document)
 	let date1 = $('#check1').val();
 	let date2 = $('#check2').val();
 	
+	$.get("http://localhost:8080/getBookedRoom",{date1:date1, date2:date2},function(result){
+		console.log(result);		
+		$('#reserList').empty();
+		$.each(result, function(ndx, value){
+			str1='<option value="'+value['bookcode']+'">'+value['roomname']+','+value['roomtype']+','+value['checkin']+'/'+value['checkout']+','+value['rperson']+'/'+value['person']+','+value['name']+','+value['mobile']+'</option>';
+			$('#reserList').append(str1);
+		})
+	},'json');	
 	$.get("http://localhost:8080/getRoomSearch",{date1:date1, date2:date2},function(result){
 		console.log(result);
+				
 		$('#roomList').empty();
 		$.each(result, function(ndx,value){
 			str='<option value="'+value['roomcode']+'">'+value['roomname']+','+value['typename']+','+value['howmany']+','+value['howmuch']+'</option>';
 		$('#roomList').append(str);
 		});
+		
 	},'json');
 })
+
 .on('click','#roomList option',function(){
 	let a = $(this).text();
 	console.log(a);

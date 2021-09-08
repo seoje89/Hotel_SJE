@@ -50,24 +50,34 @@
 	</delete>
 	
 	<select id="doCheckDate" resultType="human.com.hotel.BookOk">
+        
+        
         select a.roomcode, 
 			   a.name as roomname, 
 			   b.name as typename, 
 			   a.howmany, 
 			   a.howmuch 
 				from room a, roomtype b  
-   			 	where 
-   			 		a.type=b.typecode
-                	and
-                	roomcode in (
+   			 	where a.type=b.typecode
+               	and a.roomcode in (
                 		select roomcode from room
                 		minus
-                		<![CDATA[      		  		
                 			select distinct roomcode 
                 			from booking1 
-                			where checkin>=#{param2} or checkout<=#{param1}
+                		<![CDATA[      		  		
+                			where (checkout >= #{param1} and checkin <= #{param2})
                 		]]>
                 		)
+           
+           
+          	      		
 	</select> 
-	
+	<select id="BookedRoom" resultType="human.com.hotel.BookedRoom">
+		select *
+			from booking1
+			<![CDATA[
+			where (checkout >= #{param1} and checkin <= #{param2})
+			]]>
+			order by bookcode
+	</select>
 </mapper>

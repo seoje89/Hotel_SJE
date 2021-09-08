@@ -3,7 +3,10 @@ package human.com.hotel;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +16,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -197,6 +201,37 @@ public class HomeController {
 		return "redirect:/";
 	}
 	
+	@RequestMapping(value="getBookedRoom", produces="application/text; charset=utf8", method=RequestMethod.GET)
+	@ResponseBody
+	public String getBookedRoom(HttpServletRequest hsr) {
+		iRoom room = sqlSession.getMapper(iRoom.class);
+	
+		String checkin = hsr.getParameter("date1");
+		String checkout = hsr.getParameter("date2");
+		
+		System.out.println(checkin);
+		System.out.println(checkout);
+		
+		ArrayList<BookedRoom> bookedroom = room.BookedRoom(checkin, checkout);
+		JSONArray ja2 = new JSONArray();
+		for(int j=0;j<bookedroom.size();j++) {
+			JSONObject jo2 = new JSONObject();
+			jo2.put("bookcode", bookedroom.get(j).getBookcode());
+			jo2.put("roomname", bookedroom.get(j).getRoomname());
+			jo2.put("roomcode", bookedroom.get(j).getRoomcode());
+			jo2.put("roomtype", bookedroom.get(j).getRoomtype());
+			jo2.put("checkin", bookedroom.get(j).getCheckin());
+			jo2.put("checkout", bookedroom.get(j).getCheckout());
+			jo2.put("rperson", bookedroom.get(j).getRperson());
+			jo2.put("person", bookedroom.get(j).getPerson());
+			jo2.put("name", bookedroom.get(j).getName());
+			jo2.put("mobile", bookedroom.get(j).getMobile());
+			
+			ja2.add(jo2);
+		}
+		System.out.println("예약된 객실 확인"+ ja2.toString());
+		return ja2.toString();
+	}
 	@RequestMapping(value="getRoomSearch", produces="application/text; charset=utf8", method=RequestMethod.GET)
 	@ResponseBody
 	public String getRoomSearch(HttpServletRequest hsr) {
@@ -210,7 +245,7 @@ public class HomeController {
 		
 		//room.doCheckDate(checkin,checkout);
 				// 리턴받는거를 인터페이스에서 따로 메서드 추가해주는게 아니에용! 감사합니다
-		//ArrayList<BookOk> bookok=room.getBookOk();
+		//ArrayList<BookOk> bookok=room.getBookOk();				
 		ArrayList<BookOk> bookok=room.doCheckDate(checkin,checkout);
 		// 찾아진 데이터로 JSONArray 만들기
 		JSONArray ja = new JSONArray();
@@ -223,7 +258,8 @@ public class HomeController {
 			jo.put("howmuch", bookok.get(i).getHowmuch());
 			ja.add(jo);
 		}
-		System.out.println("jsonarray 값확인" + ja.toString());
+		
+		System.out.println("예약가능 객실 확인" + ja.toString());		
 		return ja.toString();
 	}
 	

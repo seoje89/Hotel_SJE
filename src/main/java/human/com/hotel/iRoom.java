@@ -24,5 +24,5 @@ public interface iRoom {
 
 	ArrayList<BookOk> doCheckDate(String checkin, String checkout);//이부분 아닌가욤? 이걸로 날짜를 받아서 리턴은 아래 배열로 했어요
 	
-	//ArrayList<BookOk> getBookOk();
+	ArrayList<BookedRoom> BookedRoom(String checkin, String checkout);
 }
