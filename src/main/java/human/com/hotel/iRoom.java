@@ -16,4 +16,13 @@ public interface iRoom {
 	void goNewbie(String name, String loginid, String passcode);
 	
 	int doCheckUser(String userid, String passcode);
+
+	void doReservationRoom(String rname, int rcode, String rtype, String date1, String date2, int reserhowmany, int rhowmany,
+			String resername, String resermobile);
+
+	void doDeleteBook(int bookcode);
+
+	ArrayList<BookOk> doCheckDate(String checkin, String checkout);//이부분 아닌가욤? 이걸로 날짜를 받아서 리턴은 아래 배열로 했어요
+	
+	//ArrayList<BookOk> getBookOk();
 }

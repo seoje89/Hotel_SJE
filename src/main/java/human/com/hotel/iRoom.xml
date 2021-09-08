@@ -6,7 +6,9 @@
 <mapper namespace="human.com.hotel.iRoom">
 	<!-- select id="인터페이스의 메소드" resultType="인터페이스의 반환데이터 타입" -->
 	<select id="getRoomList" resultType="human.com.hotel.Roominfo">
-		select a.roomcode, a.name roomname, b.name typename, a.howmany, a.howmuch from room a, roomtype b where a.type=b.typecode order by roomcode
+		select a.roomcode, a.name roomname, b.name typename, a.howmany, a.howmuch
+		 from room a, roomtype b 
+		 where a.type=b.typecode order by roomcode
 	</select>
 	
 	<select id="getRoomType" resultType="human.com.hotel.Roomtype">
@@ -21,7 +23,8 @@
 	<insert id="doJoinRoom">
 		insert into room (roomcode,name,type,howmany,howmuch) 
 			values (seq_room.nextval,#{param1},#{param2},#{param3},#{param4})
-	</insert>
+	</insert>	
+
 	
 	<update id="doUpdateRoom">
 		update room set name=#{param2}, type=#{param3}, howmany=${param4}, howmuch=${param5}
@@ -36,4 +39,35 @@
 	<select id="doCheckUser" resultType="int">
 		select count(*) from member where loginid=#{param1} and passcode=#{param2}
 	</select>
+	
+	<insert id="doReservationRoom">
+		insert into booking1 (bookcode, roomname, roomcode, roomtype, checkin, checkout, rperson, person, name, mobile)
+			values (seq_book.nextval,#{param1},#{param2},#{param3},#{param4},#{param5},#{param6},#{param7},#{param8},#{param9})
+	</insert>
+	
+	<delete id="doDeleteBook">
+		delete from room where bookcode=#{param1}
+	</delete>
+	
+	<select id="doCheckDate" resultType="human.com.hotel.BookOk">
+        select a.roomcode, 
+			   a.name as roomname, 
+			   b.name as typename, 
+			   a.howmany, 
+			   a.howmuch 
+				from room a, roomtype b  
+   			 	where 
+   			 		a.type=b.typecode
+                	and
+                	roomcode in (
+                		select roomcode from room
+                		minus
+                		<![CDATA[      		  		
+                			select distinct roomcode 
+                			from booking1 
+                			where checkin>=#{param2} or checkout<=#{param1}
+                		]]>
+                		)
+	</select> 
+	
 </mapper>

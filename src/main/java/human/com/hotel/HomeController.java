@@ -74,9 +74,13 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value="/booking", method=RequestMethod.GET)
-	public String gobooking(HttpServletRequest hsr) {
+	public String gobooking(HttpServletRequest hsr, Model model) {
 		HttpSession session=hsr.getSession();
 		String loginid=(String)session.getAttribute("loginid");
+		
+		iRoom room = sqlSession.getMapper(iRoom.class);
+		ArrayList<Roomtype> roomtype=room.getRoomType();
+		model.addAttribute("rtype", roomtype);
 		
 		if(loginid==null) {
 			return "redirect:/";
@@ -170,7 +174,7 @@ public class HomeController {
 		
 		return "ok";
 	}
-	
+
 	@RequestMapping(value="updateRoom", produces="application/text; charset=utf8", method=RequestMethod.POST)
 	@ResponseBody
 	public String updateRoom(HttpServletRequest hsr) {
@@ -193,5 +197,64 @@ public class HomeController {
 		return "redirect:/";
 	}
 	
+	@RequestMapping(value="getRoomSearch", produces="application/text; charset=utf8", method=RequestMethod.GET)
+	@ResponseBody
+	public String getRoomSearch(HttpServletRequest hsr) {
+		iRoom room = sqlSession.getMapper(iRoom.class);
 	
+		String checkin = hsr.getParameter("date1");
+		String checkout = hsr.getParameter("date2");
+		
+		System.out.println(checkin);
+		System.out.println(checkout);
+		
+		//room.doCheckDate(checkin,checkout);
+				// 리턴받는거를 인터페이스에서 따로 메서드 추가해주는게 아니에용! 감사합니다
+		//ArrayList<BookOk> bookok=room.getBookOk();
+		ArrayList<BookOk> bookok=room.doCheckDate(checkin,checkout);
+		// 찾아진 데이터로 JSONArray 만들기
+		JSONArray ja = new JSONArray();
+		for(int i=0;i<bookok.size();i++) {
+			JSONObject jo = new JSONObject();
+			jo.put("roomcode", bookok.get(i).getRoomcode());
+			jo.put("roomname", bookok.get(i).getRoomname());
+			jo.put("typename", bookok.get(i).getTypename());
+			jo.put("howmany", bookok.get(i).getHowmany());
+			jo.put("howmuch", bookok.get(i).getHowmuch());
+			ja.add(jo);
+		}
+		System.out.println("jsonarray 값확인" + ja.toString());
+		return ja.toString();
+	}
+	
+	@RequestMapping(value="reservationRoom", produces="application/text; charset=utf8", method=RequestMethod.POST)
+	@ResponseBody
+	public String reservationRoom(HttpServletRequest hsr) {
+		String rname=hsr.getParameter("roomname");
+		int rcode=Integer.parseInt(hsr.getParameter("roomcode"));
+		String rtype=hsr.getParameter("roomtype");		
+		int rhowmany=Integer.parseInt(hsr.getParameter("howmany"));
+		int rhowmuch=Integer.parseInt(hsr.getParameter("howmuch"));
+		String date1=hsr.getParameter("date1");
+		String date2=hsr.getParameter("date2");
+		int reserhowmany = Integer.parseInt(hsr.getParameter("reserhowmany"));
+		int allprice = Integer.parseInt(hsr.getParameter("allprice"));
+		String resername = hsr.getParameter("resername");
+		String resermobile= hsr.getParameter("resermobile");		
+		
+		iRoom room=sqlSession.getMapper(iRoom.class);
+		room.doReservationRoom(rname, rcode, rtype, date1, date2, reserhowmany, rhowmany, resername, resermobile);
+		
+		return "ok";
+	}
+	
+	@RequestMapping(value="deleteBook", produces="application/text; charset=utf8", method=RequestMethod.POST)
+	@ResponseBody
+	public String deleteBook(HttpServletRequest hsr) {
+		int bookcode = Integer.parseInt(hsr.getParameter("bookcode"));
+		iRoom book = sqlSession.getMapper(iRoom.class);
+		
+		book.doDeleteBook(bookcode);
+		return "ok";
+	}
 }
