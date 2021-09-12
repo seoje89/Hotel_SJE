@@ -3,7 +3,10 @@ package human.com.hotel;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +16,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -197,15 +201,53 @@ public class HomeController {
 		return "redirect:/";
 	}
 	
-	@RequestMapping(value="getRoomSearch", produces="application/text; charset=utf8", method=RequestMethod.GET)
+	@RequestMapping(value="getBookedRoom", produces="application/text; charset=utf8", method=RequestMethod.POST)
+	@ResponseBody
+	public String getBookedRoom(HttpServletRequest hsr) {
+		iRoom room = sqlSession.getMapper(iRoom.class);
+	
+		String checkin = hsr.getParameter("date1");
+		String checkout = hsr.getParameter("date2");
+		
+		System.out.println(checkin);
+		System.out.println(checkout);
+		
+		ArrayList<BookedRoom> bookedroom = room.BookedRoom(checkin, checkout);
+		JSONArray ja2 = new JSONArray();
+		for(int j=0;j<bookedroom.size();j++) {
+			JSONObject jo2 = new JSONObject();
+			jo2.put("bookcode", bookedroom.get(j).getBookcode());
+			jo2.put("roomname", bookedroom.get(j).getRoomname());
+			jo2.put("roomcode", bookedroom.get(j).getRoomcode());
+			jo2.put("roomtype", bookedroom.get(j).getRoomtype());
+			jo2.put("checkin", bookedroom.get(j).getCheckin());
+			jo2.put("checkout", bookedroom.get(j).getCheckout());
+			jo2.put("rperson", bookedroom.get(j).getRperson());
+			jo2.put("person", bookedroom.get(j).getPerson());
+			jo2.put("name", bookedroom.get(j).getName());
+			jo2.put("mobile", bookedroom.get(j).getMobile());
+			
+			ja2.add(jo2);
+		}
+		System.out.println("예약된 객실 확인"+ ja2.toString());
+		return ja2.toString();
+	}
+	@RequestMapping(value="getRoomSearch", produces="application/text; charset=utf8", method=RequestMethod.POST)
 	@ResponseBody
 	public String getRoomSearch(HttpServletRequest hsr) {
 		iRoom room = sqlSession.getMapper(iRoom.class);
+	
+		String checkin = hsr.getParameter("date1");
+		String checkout = hsr.getParameter("date2");
 		
-//		String checkin = hsr.getParameter("checkin");
-//		String checkout = hsr.getParameter("checkout");
-				
-		ArrayList<BookOk> bookok = room.getBookOk();
+		System.out.println(checkin);
+		System.out.println(checkout);
+		
+		//room.doCheckDate(checkin,checkout);
+				// 리턴받는거를 인터페이스에서 따로 메서드 추가해주는게 아니에용! 감사합니다
+		//ArrayList<BookOk> bookok=room.getBookOk();				
+		ArrayList<BookOk> bookok=room.doCheckDate(checkin,checkout);
+		// 찾아진 데이터로 JSONArray 만들기
 		JSONArray ja = new JSONArray();
 		for(int i=0;i<bookok.size();i++) {
 			JSONObject jo = new JSONObject();
@@ -216,13 +258,39 @@ public class HomeController {
 			jo.put("howmuch", bookok.get(i).getHowmuch());
 			ja.add(jo);
 		}
+		
+		System.out.println("예약가능 객실 확인" + ja.toString());		
 		return ja.toString();
 	}
+	
+	@RequestMapping(value="getBookedDetail", produces="application/text; charset=utf8", method=RequestMethod.POST)
+	@ResponseBody
+	public String getBookedDetail(HttpServletRequest hsr, Model model) {
+		int bcode = Integer.parseInt(hsr.getParameter("bcode"));
+		iRoom book=sqlSession.getMapper(iRoom.class);
+		ArrayList<BookedDetail> bookDetail = book.doGetBookedDetail(bcode);
+		
+			JSONObject jo3 = new JSONObject();
+			jo3.put("bookcode", bookDetail.get(0).getBookcode());
+			jo3.put("roomname", bookDetail.get(0).getRoomname());
+			jo3.put("roomtype", bookDetail.get(0).getRoomtype());
+			jo3.put("checkin", bookDetail.get(0).getCheckin());
+			jo3.put("checkout", bookDetail.get(0).getCheckout());
+			jo3.put("rperson", bookDetail.get(0).getRperson());
+			jo3.put("person", bookDetail.get(0).getPerson());
+			jo3.put("howmuch", bookDetail.get(0).getHowmuch());
+			jo3.put("rname", bookDetail.get(0).getRname());
+			jo3.put("mobile", bookDetail.get(0).getMobile());
+		
+		return jo3.toString();
+	}
+	
 	
 	@RequestMapping(value="reservationRoom", produces="application/text; charset=utf8", method=RequestMethod.POST)
 	@ResponseBody
 	public String reservationRoom(HttpServletRequest hsr) {
 		String rname=hsr.getParameter("roomname");
+		int rcode=Integer.parseInt(hsr.getParameter("roomcode"));
 		String rtype=hsr.getParameter("roomtype");		
 		int rhowmany=Integer.parseInt(hsr.getParameter("howmany"));
 		int rhowmuch=Integer.parseInt(hsr.getParameter("howmuch"));
@@ -234,10 +302,32 @@ public class HomeController {
 		String resermobile= hsr.getParameter("resermobile");		
 		
 		iRoom room=sqlSession.getMapper(iRoom.class);
-		room.doReservationRoom(rname, rtype, date1, date2, reserhowmany, rhowmany, rhowmuch, allprice, resername, resermobile);
+		room.doReservationRoom(rname, rcode, rtype, date1, date2, reserhowmany, rhowmany, resername, resermobile);
 		
 		return "ok";
 	}
+	
+	@RequestMapping(value="updateReservationRoom", produces="application/text; charset=utf8", method=RequestMethod.POST)
+	@ResponseBody
+	public String updateReservationRoom(HttpServletRequest hsr) {
+		int brcode = Integer.parseInt(hsr.getParameter("roomcode"));
+//		String rname=hsr.getParameter("roomname");
+//		String rtype=hsr.getParameter("roomtype");		
+//		int rhowmany=Integer.parseInt(hsr.getParameter("howmany"));
+//		int rhowmuch=Integer.parseInt(hsr.getParameter("howmuch"));
+//		String date1=hsr.getParameter("date1");
+//		String date2=hsr.getParameter("date2");
+		int reserhowmany = Integer.parseInt(hsr.getParameter("reserhowmany"));
+//		int allprice = Integer.parseInt(hsr.getParameter("allprice"));
+		String resername = hsr.getParameter("resername");
+		String resermobile= hsr.getParameter("resermobile");
+		
+		iRoom room=sqlSession.getMapper(iRoom.class);
+		room.doUpdateReservationRoom(brcode, reserhowmany, resername, resermobile);
+		
+		return "ok";
+	}
+	
 	
 	@RequestMapping(value="deleteBook", produces="application/text; charset=utf8", method=RequestMethod.POST)
 	@ResponseBody

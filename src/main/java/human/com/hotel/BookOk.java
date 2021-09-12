@@ -6,8 +6,6 @@ public class BookOk {
 	private String typename;
 	private int howmany;
 	private int howmuch;
-//	private String checkin;
-//	private String checkout;
 	
 	
 	public BookOk(int roomcode, String roomname, String typename, int howmany, int howmuch
@@ -20,7 +18,9 @@ public class BookOk {
 		this.howmuch = howmuch;
 		
 	}
-
+//지금 어느부분 하고 있는거에요?
+	
+	//예약가능 객실목록에 조건줘서 출력하는 부분이요
 
 	public BookOk() {
 		

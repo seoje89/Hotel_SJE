@@ -118,7 +118,7 @@
             <td><input readonly id="rclass" type="text" style="font-size: 20px; width: 130px;"></td>
             <tr></tr>                
             <td>숙박기간</td>
-            <td><input id="date1" type="date"> ~ <input id="date2" type="date"></td>
+            <td><input readonly id="date1" type="date"> ~ <input readonly id="date2" type="date"></td>
             <tr></tr>
             <td>예약인원</td>
             <td><input id="reserhowmany" type="number" style="font-size: 16px; width: 88px;">명</td>
@@ -158,15 +158,30 @@
 <script>
 $(document)
 .on('click','#roomsearch',function(){
-	$.get("http://localhost:8080/getRoomSearch",{},function(result){
+	let date1 = $('#check1').val();
+	let date2 = $('#check2').val();
+	
+	$.post("http://localhost:8080/getBookedRoom",{date1:date1, date2:date2},function(result){
+		console.log(result);		
+		$('#reserList').empty();
+		$.each(result, function(ndx, value){
+			str1='<option value="'+value['bookcode']+'">'+value['roomname']+','+value['roomtype']+','+value['checkin']+'/'+value['checkout']+','+value['rperson']+'/'+value['person']+','+value['name']+','+value['mobile']+'</option>';
+			$('#reserList').append(str1);
+		})
+	},'json');	
+	$.post("http://localhost:8080/getRoomSearch",{date1:date1, date2:date2},function(result){
 		console.log(result);
+				
 		$('#roomList').empty();
 		$.each(result, function(ndx,value){
 			str='<option value="'+value['roomcode']+'">'+value['roomname']+','+value['typename']+','+value['howmany']+','+value['howmuch']+'</option>';
-		$('#roomList').append(str);
+			$('#roomList').append(str);
 		});
+		
 	},'json');
+	return false;
 })
+
 .on('click','#roomList option',function(){
 	let a = $(this).text();
 	console.log(a);
@@ -199,6 +214,79 @@ $(document)
 	
 	return false;
 })
+
+.on('click','#reserList option',function(){
+	
+	let bcode = $('#reserList option:selected').val();
+	console.log(bcode);
+	
+	$.post("http://localhost:8080/getBookedDetail",{bcode:bcode},function(result){
+		console.log(result);
+		console.log(result.roomname);
+		$('#rname').val(result.roomname);
+		$('#roomcode').val(result.bookcode);
+		$('#rclass').val(result.roomtype);
+		$('#date1').val(result.checkin);
+		$('#date2').val(result.checkout);
+		$('#reserhowmany').val(result.rperson);
+		$('#rhowmany').val(result.person);
+		$('#rhowmuch').val(result.howmuch);
+		$('#resername').val(result.rname);
+		$('#resermobile').val(result.mobile);
+		
+		let checkin = $('#date1').val();
+		let checkout = $('#date2').val();
+		var ar1 = new Date(checkin);
+		var ar2 = new Date(checkout);
+		let day = ar2 - ar1;
+		let days = day / (1000*60*60*24);
+		let oneDayPrice = $('#rhowmuch').val();
+		
+		if(checkin && checkout != ''){
+			console.log(days);
+			$('#allprice').val(days*oneDayPrice);
+			
+			return false;
+		}
+	},'json');
+	
+	return false;
+/* 	let a = $(this).text();
+	console.log(a);
+	b = a.split(',');
+	console.log(b);
+	
+	c = a.substr(16,21);
+	console.log(c);
+	d = c.split('/');
+	console.log(d);
+	
+	e = a.substr(38,3);
+	console.log(e);
+	f = e.split('/');
+	console.log(f);
+	
+	$('#rname').val($.trim(b[0]));
+	console.log(b[0]);
+	$('#rclass').val($.trim(b[1]));
+	console.log(b[1]);
+	
+	$('#date1').val($.trim(d[0]));
+	console.log(d[0]);
+	$('#date2').val($.trim(d[1]));
+	console.log(d[1]);
+	
+	$('#reserhowmany').val($.trim(f[0]));
+	console.log(f[0]);
+	$('#rhowmany').val($.trim(f[1]));	
+	console.log(f[1]);
+	
+	$('#resername').val($.trim(b[4]));
+	console.log(b[4]);
+	$('#resermobile').val($.trim(b[5]));
+	console.log(b[5]); */
+})
+
 .on('focusout','#reserhowmany',function(){
 	var rperson = parseInt($(this).val());
 	var mperson = parseInt($('#rhowmany').val());
@@ -274,8 +362,9 @@ $(document)
 		return false;
 	}
 	
-	$.post('http://localhost:8080/reservationRoom',
-			{roomname:roomname,roomtype:roomtype,date1:date1,date2:date2,reserhowmany:reserhowmany,howmany:howmany,howmuch:howmuch,allprice:allprice,resername:resername,resermobile:resermobile},
+	if(roomcode <= 100){ // insert		
+		$.post('http://localhost:8080/reservationRoom',
+			{roomname:roomname,roomcode:roomcode,roomtype:roomtype,date1:date1,date2:date2,reserhowmany:reserhowmany,howmany:howmany,howmuch:howmuch,allprice:allprice,resername:resername,resermobile:resermobile},
 			function(result){
 				console.log(result);
 				if(result=='ok'){
@@ -283,6 +372,18 @@ $(document)
 					$('#rname, #resermobile, #resername, #allprice, #rclass, #date1, #date2, #reserhowmany, #rhowmany, #rhowmuch, #roomcode').val('');
 				}
 			},'text');
+		return false;
+	}
+	else { // update
+		$.post('http://localhost:8080/updateReservationRoom',
+				{roomname:roomname,roomcode:roomcode,roomtype:roomtype,date1:date1,date2:date2,reserhowmany:reserhowmany,howmany:howmany,howmuch:howmuch,allprice:allprice,resername:resername,resermobile:resermobile},
+				function(result){
+					if(result=='ok'){
+						location.reload();
+					}
+				},'text');
+		return false;
+	}
 	
 	
 })
@@ -291,7 +392,7 @@ $(document)
 	return false;
 })
 .on('click','#btndelete',function(){
-	$.post('http://localhost:8080/deleteBook',{bookcode:$('#reserList optionselected').val()},function(result){
+	$.post('http://localhost:8080/deleteBook',{bookcode:$('#roomcode').val()},function(result){
 		console.log(result);
 		if(result=="ok"){
 			$('#btnclear').trigger('click'); // 입력란 초기화, trigger : 호출해주는 효과
