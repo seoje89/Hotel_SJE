@@ -6,17 +6,60 @@
 <head>
 	<title>Home</title>
 </head>
+<style>
+body {
+	background-image:url('https://cdn.pixabay.com/photo/2020/01/14/22/46/alps-4766515_960_720.jpg');
+	background-repeat:no-repeat;
+	background-size:100%;	
+}
+#startpage {
+	height : 400px;
+	width : 400px;
+	border-radius : 10%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	background: rgb(231, 238, 250);
+}
+#intro {
+	font-size : 30px;
+	text-align : center;
+}
+h3 {
+	font-size : 30px;
+	text-align : center;
+	
+}
+#login {
+	font-size : 30px;
+	text-align : center;
+	
+}
+#newbi {
+	font-size : 20px;
+	text-align : center;
+}
+</style>
 <body>
-<!-- <a href='selected?path=login'>관리자 로그인</a>&nbsp;&nbsp;
-<a href='selected?path=newbie'>회원가입</a> -->
-
-<form method="post" action="/checkuser" id="fmlogin">
-	ID : <input type="text" name="userid"><br>
-	PW : <input type="password" name="userpw"><br><br>
-	<input type="submit" value="로그인">
-	<input type="button" value="취소" onclick="location.href='/'">
-</form>
-<a href='/newbie'>회원가입</a>
+<div id=intro>
+	<h1>HUMAN호텔에 오신걸 환영합니다</h1>
+</div>
+<div id=startpage>
+	<!-- <a href='selected?path=login'>관리자 로그인</a>&nbsp;&nbsp;
+	<a href='selected?path=newbie'>회원가입</a> -->
+	<h3>로그인 해주세요</h3>
+	<form id=login method="post" action="/checkuser" id="fmlogin">
+		ID : <input style="width:200px;height:30px;font-size:20px;" type="text" name="userid"><br>
+		PW : <input style="width:190px;height:30px;font-size:20px;" type="password" name="userpw"><br><br>
+		<input style="width:120px;height:50px;font-size:30px;" type="submit" value="로그인">
+		<input style="width:100px;height:50px;font-size:30px;" type="button" value="취소" onclick="location.href='/'">
+	</form>
+	<div id=newbi>
+		아직 회원이 아니신가요?
+		<a href='/newbie'>회원가입</a>
+	</div>
+</div>
 </body>
 <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 <script>
