@@ -8,10 +8,15 @@
 <title>객실관리</title>
 </head>
 <style>
+		body{
+			background-image:url('https://cdn.pixabay.com/photo/2021/03/15/10/56/daffodils-6096727_960_720.jpg');
+			background-repeat:no-repeat;
+			background-size:100%;	
+		}
         #header {
             margin: auto;
             height: 100px;
-            background-color: yellow;
+          /*  background-color: yellow; */
             display: flex;
             align-items: center;
         }
@@ -25,13 +30,14 @@
         #roomlist {
             width: 40%;
             height: 500px;
-            background-color: rgb(177, 228, 96);
+          /*  background-color: rgb(177, 228, 96); */
             float: left;
         }
         #roomdetails {
-            width: 60%;
+            width: 40%;
             height: 500px;
-            background-color: gray;
+          	background-color: rgb(255, 239, 185);
+          	border-radius: 20px;
             float: left;
         }
         #buttons {
@@ -50,6 +56,7 @@
 <body>
     <div id="header">
     	<div id="link">
+    		&nbsp;&nbsp;&nbsp;
     		<h2><a href="/room">객실관리</a></h2>
     		&nbsp;&nbsp;&nbsp;
     		<h2><a href="/booking">예약관리</a></h2>
@@ -59,44 +66,48 @@
   		<input type="button" value="로그아웃" onclick="location.href='/logout'">
   	</div>
     </div>
-    
-    <div id="roomlist">
-        <table style="padding-left: 10px;">
-            <th style="text-align: left;"><h3>객실목록</h3></th>
-            <tr></tr>
-            <td><select id="roomList" size="10" style="font-size: 16px; background-color: white; width: 230px; height: 350px;">
-               <%--  <c:forEach items="${list}" var="room">
-                	<option value="${room.roomcode}">${room.roomname},${room.typename},${room.howmany},${room.howmuch}</option>
-                </c:forEach>  --%>            
-            </select></td>
-        </table>
-    </div>
-    <div id="roomdetails">
-        <table style="padding-left: 15px;">
-            <td><h3>객실이름</h3></td>
-            <td><input id="rname" type="text" style="font-size: 20px; width: 100px;"><input type=hidden id=roomcode></td>
-            <tr></tr>                
-            <td><h3>객실분류</h3></td>
-            <td>
-                <select id="rclass" size="5" style="font-size: 14px; width: 110px;">
-                    <c:forEach items="${rtype}" var="type">
-                		<option value="${type.typecode}">${type.name}</option>
-                	</c:forEach> 
-                </select>
-            </td>
-            <tr></tr>
-            <td><h3>숙박가능인원</h3></td>
-            <td><input id="rhowmany" type="number" style="font-size: 16px; width: 88px;">명</td>
-            <tr></tr>        
-            <td><h3>1박요금</h3></td>  
-            <td><input id="rhowmuch" type="money" style="font-size: 16px; width: 88px;">원</td>
-        </table>
-        <div id="buttons">
-            <input id="btnjoin" type="button" value="등록" style="background-color: gold;">
-            <input id="btndelete" type="button" value="삭제" style="background-color: rgb(255, 58, 58);">
-            <input id="btnreset" type="button" value="초기화" style="width: 100px; background-color: aqua;">
-        </div>        
-    </div>
+    <div id="main">
+	    <div id="roomlist">
+	        <table style="padding-left: 100px;">
+	            <th style="text-align: center; font-size:20px"><h3>객실목록</h3></th>
+	            <tr></tr>
+	            <td><select id="roomList" size="10" style="font-size: 16px; background-color: white; width: 300px; height: 400px; vertical-align:middle; text-align-last:center">
+	               <option disabled>객실이름 | 객실종류 | 수용인원 | 1박비용 </option>
+	               <%--  <c:forEach items="${list}" var="room">
+	                	<option value="${room.roomcode}">${room.roomname},${room.typename},${room.howmany},${room.howmuch}</option>
+	                </c:forEach>  --%>            
+	            </select></td>
+	        </table>
+	    </div>
+	    <div id="roomdetails">
+	        <table style="padding-left: 15px;">
+	        	<th style="text-align: center; font-size:20px"><h3>객실정보입력</h3></th>
+	        	<tr></tr>
+	            <td><h3>객실이름</h3></td>
+	            <td><input id="rname" type="text" style="font-size: 20px; width: 100px;"><input type=hidden id=roomcode></td>
+	            <tr></tr>                
+	            <td><h3>객실분류</h3></td>
+	            <td>
+	                <select id="rclass" size="5" style="font-size: 14px; width: 110px;">
+	                    <c:forEach items="${rtype}" var="type">
+	                		<option value="${type.typecode}">${type.name}</option>
+	                	</c:forEach> 
+	                </select>
+	            </td>
+	            <tr></tr>
+	            <td><h3>숙박가능인원</h3></td>
+	            <td><input id="rhowmany" type="number" style="font-size: 16px; width: 88px;">명</td>
+	            <tr></tr>        
+	            <td><h3>1박요금</h3></td>  
+	            <td><input id="rhowmuch" type="money" style="font-size: 16px; width: 88px;">원</td>
+	        </table>
+	        <div id="buttons">
+	            <input id="btnjoin" type="button" value="등록" style="background-color: gold;">
+	            <input id="btndelete" type="button" value="삭제" style="background-color: rgb(255, 58, 58);">
+	            <input id="btnreset" type="button" value="초기화" style="width: 100px; background-color: aqua;">
+	        </div>        
+	    </div>
+	  </div>
 </body>
 <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 <script>
@@ -106,7 +117,7 @@
 		$.post("http://localhost:8080/getRoomList",{},function(result){			
 			console.log(result);
 			$.each(result, function(ndx,value){
-				str='<option value="'+value['roomcode']+'">'+value['roomname']+','+value['typename']+','+value['howmany']+','+value['howmuch']+'</option>';
+				str='<option value="'+value['roomcode']+'">'+value['roomname']+','+value['typename']+','+value['howmany']+'명,'+value['howmuch']+'원'+'</option>';
 			$('#roomList').append(str);
 			});
 			

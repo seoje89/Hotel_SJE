@@ -6,7 +6,7 @@
 <mapper namespace="human.com.hotel.iRoom">
 	<!-- select id="인터페이스의 메소드" resultType="인터페이스의 반환데이터 타입" -->
 	<select id="getRoomList" resultType="human.com.hotel.Roominfo">
-		select a.roomcode, a.name roomname, b.name typename, a.howmany, a.howmuch
+		select a.roomcode, a.name roomname, rpad(b.name,11) typename, a.howmany, a.howmuch
 		 from room a, roomtype b 
 		 where a.type=b.typecode order by roomcode
 	</select>
@@ -41,12 +41,20 @@
 	</select>
 	
 	<insert id="doReservationRoom">
-		insert into booking1 (bookcode, roomname, roomcode, roomtype, checkin, checkout, rperson, person, name, mobile)
+		insert into book (bookcode, roomname, roomcode, roomtype, checkin, checkout, rperson, person, name, mobile)
 			values (seq_book.nextval,#{param1},#{param2},#{param3},#{param4},#{param5},#{param6},#{param7},#{param8},#{param9})
 	</insert>
 	
+	<update id="doUpdateReservationRoom">
+		update book 
+    		set rperson = #{param2},
+        		name = #{param3},
+				mobile = #{param4}
+    		where bookcode = #{param1}
+	</update>
+	
 	<delete id="doDeleteBook">
-		delete from room where bookcode=#{param1}
+		delete from book where bookcode=#{param1}
 	</delete>
 	
 	<select id="doCheckDate" resultType="human.com.hotel.BookOk">
@@ -63,7 +71,7 @@
                 		select roomcode from room
                 		minus
                 			select distinct roomcode 
-                			from booking1 
+                			from book 
                 		<![CDATA[      		  		
                 			where (checkout >= #{param1} and checkin <= #{param2})
                 		]]>
@@ -74,10 +82,19 @@
 	</select> 
 	<select id="BookedRoom" resultType="human.com.hotel.BookedRoom">
 		select *
-			from booking1
+			from book
 			<![CDATA[
 			where (checkout >= #{param1} and checkin <= #{param2})
 			]]>
 			order by bookcode
+	</select>
+	
+	<select id="doGetBookedDetail" resultType="human.com.hotel.BookedDetail">
+		select a.bookcode, a.roomname, a.roomtype, 
+       		   a.checkin, a.checkout, a.rperson, 
+       		   a.person, b.howmuch, a.name as rname, a.mobile
+    	from book a, room b
+    	where a.roomcode = b.roomcode
+    	and a.bookcode = #{param1}
 	</select>
 </mapper>
