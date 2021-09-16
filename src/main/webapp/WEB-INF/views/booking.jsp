@@ -8,10 +8,15 @@
 <title>예약관리</title>
 </head>
 <style>
+		body{
+			background-image:url('https://cdn.pixabay.com/photo/2021/03/15/10/56/daffodils-6096727_960_720.jpg');
+			background-repeat:no-repeat;
+			background-size:100%;	
+		}
         #header {
             margin: auto;
             height: 100px;
-            background-color: yellow;
+            /*  background-color: yellow;*/
             display: flex;
             align-items: center;
         }
@@ -20,32 +25,34 @@
         }
         #btns {
         	width:35%;
+        	text-align: center;
         }
         #header h2 {display: inline;}
         #classify {
             width: 100%;
             height: 70px;
-            background-color: rgb(177, 228, 96);
+           /* background-color: rgb(177, 228, 96); */
             float: left;
         }
         #reservationOk {
             width: 30%;
             height: 500px;
-            background-color: rgb(58, 241, 83);
+          /*  background-color: rgb(58, 241, 83);*/
             float: left;
-            display: flex;
+            display: inline;
             justify-content: center;
         }
         #reserDetails {
             width: 40%;
             height: 500px;
-            background-color: #E3ACEF;
+            background-color: rgb(255, 239, 185);
+            border-radius: 20px;
             float: left;
         }
         #soldOut {
             width: 30%;
             float: left;
-            background-color: #A49EFD;
+           /* background-color: #A49EFD;*/
             height: 500px;
             display: flex;
             justify-content: center;
@@ -66,13 +73,13 @@
 <body>
   <div id="header">
   	<div id="link">
+  		&nbsp;&nbsp;&nbsp;
   		<h2><a href='/room'">객실관리</a></h2>
   		&nbsp;&nbsp;&nbsp;
   		<h2><a href="/booking">예약관리</a></h2>
   	</div>
   	<div id="btns">
-  		<p>${loginid}님 환영합니다</p>
-  		<input type="button" value="로그아웃" onclick="location.href='/logout'">
+  		<p>${loginid}님 <input id="logout" type="button" value="로그아웃" onclick="location.href='/logout'"></p>
   	</div>
   </div>
     <div id="classify">
@@ -99,45 +106,53 @@
     </div>
     <div id="reservationOk">
         <table>
-            <th style="text-align: left;"><h3>예약가능 객실목록</h3></th>
+            <th style="text-align: center;"><h3>예약가능 객실목록</h3></th>
             <tr></tr>
-            <td><select id="roomList" size="10" style="font-size: 16px; background-color: white; width: 260px; height: 350px;">
+            <td>
+            <select id="roomList" size="10" style="font-size: 16px; background-color: white; width: 305px; height: 430px; overflow:scroll;">
                 <!--<option>태조산</option>-->
-            
-            </select></td>
+            	
+            </select>
+            </td>
         </table>
     </div>
     <div id="reserDetails">
-        <table style="padding-left: 15px;">
+        <table style="padding-left: 10%;">
+        	<th style="text-align:center; font-size:18px;"><h3>객실 상세정보</h3></th>
+        	<tr></tr>
             <td>객실이름</td>
-            <td><input readonly id="rname" type="text" style="font-size: 20px; width: 100px;">
+            <td><input readonly id="rname" type="text" style="font-size: 20px; width: 133px;">
             	<input type="hidden" id="roomcode">	
             </td>
             <tr></tr>
             <td>객실종류</td>
-            <td><input readonly id="rclass" type="text" style="font-size: 20px; width: 130px;"></td>
+            <td><input readonly id="rclass" type="text" style="font-size: 20px; width: 133px;"></td>
             <tr></tr>                
             <td>숙박기간</td>
-            <td><input readonly id="date1" type="date"> ~ <input readonly id="date2" type="date"></td>
+            <td>
+            	<input style="margin-bottom:4px;" readonly id="date1" type="date"> 부터<br>
+            	<input readonly id="date2" type="date"> 까지
+            </td>
             <tr></tr>
             <td>예약인원</td>
-            <td><input id="reserhowmany" type="number" style="font-size: 16px; width: 88px;">명</td>
+            <td><input id="reserhowmany" type="number" style="font-size: 18px; width: 133px;"> 명</td>
             <tr></tr>
             <td>수용인원</td>
-            <td><input readonly id="rhowmany" type="text" style="font-size: 16px; width: 88px;">명</td>
+            <td><input readonly id="rhowmany" type="text" style="font-size: 18px; width: 133px;"> 명</td>
             <tr></tr>         
             <td>1박비용</td>  
-            <td><input readonly id="rhowmuch" type="text" style="font-size: 16px; width: 88px;">원</td>
+            <td><input readonly id="rhowmuch" type="text" style="font-size: 18px; width: 133px;"> 원</td>
             <tr></tr>
             <td>총숙박비</td>  
-            <td><input readonly id="allprice" type="money" style="font-size: 16px; width: 88px;">원</td>
+            <td><input readonly id="allprice" type="money" style="font-size: 18px; width: 133px;"> 원</td>
             <tr></tr>
             <td>예약자명</td>
-            <td><input id="resername" type="text" style="font-size: 16px; width: 88px;"></td>
+            <td><input id="resername" type="text" style="font-size: 18px; width: 133px;"></td>
             <tr></tr>      
             <td>예약자 폰번호</td>
-            <td><input id="resermobile" type="mobile" style="font-size: 16px; width: 120px;"></td>
+            <td><input id="resermobile" type="mobile" style="font-size: 18px; width: 133px;"></td>
         </table>
+       
         <div id="buttons">
             <input id="btnjoin" type="button" value="등록" style="background-color: gold;">
             <input id="btndelete" type="button" value="삭제" style="background-color: rgb(255, 58, 58);">
@@ -146,9 +161,9 @@
     </div>     
     <div id="soldOut">
         <table>
-            <th style="text-align: left;"><h3>이미 예약된 객실</h3></th>
+            <th style="text-align: center;"><h3>이미 예약된 객실</h3></th>
             <tr></tr>
-            <td><select id="reserList" size="10" style="font-size: 16px; background-color: white; width: 300px; height: 350px; overflow:scroll;">
+            <td><select id="reserList" size="10" style="font-size: 16px; background-color: white; width: 300px; height: 430px; overflow:scroll;">
                 <!-- <option>태조산</option> -->            
             </select></td>
         </table>
@@ -164,16 +179,21 @@ $(document)
 	$.post("http://localhost:8080/getBookedRoom",{date1:date1, date2:date2},function(result){
 		console.log(result);		
 		$('#reserList').empty();
+		str3 ='<option disabled>객실이름 | 객실타입 | 체크인/체크아웃 | 예약인원/수용인원 | 예약자명 | 예약자연락처</option>'
+		$('#reserList').append(str3);
 		$.each(result, function(ndx, value){
 			str1='<option value="'+value['bookcode']+'">'+value['roomname']+','+value['roomtype']+','+value['checkin']+'/'+value['checkout']+','+value['rperson']+'/'+value['person']+','+value['name']+','+value['mobile']+'</option>';
-			$('#reserList').append(str1);
+			$('#reserList').append(str1);			
 		})
 	},'json');	
 	$.post("http://localhost:8080/getRoomSearch",{date1:date1, date2:date2},function(result){
 		console.log(result);
 				
 		$('#roomList').empty();
+		str2 = '<option disabled>객실이름 | 객실종류 | 수용인원 | 1박비용 </option>'
+		$('#roomList').append(str2);
 		$.each(result, function(ndx,value){
+			
 			str='<option value="'+value['roomcode']+'">'+value['roomname']+','+value['typename']+','+value['howmany']+','+value['howmuch']+'</option>';
 			$('#roomList').append(str);
 		});
@@ -389,6 +409,8 @@ $(document)
 })
 .on('click','#btnclear',function(){
 	$('#rname, #resermobile, #resername, #allprice, #rclass, #date1, #date2, #reserhowmany, #rhowmany, #rhowmuch, #roomcode').val('');
+	$('#roomList option:selected').prop("selected",false);
+	$('#reserList option:selected').prop("selected",false);
 	return false;
 })
 .on('click','#btndelete',function(){
@@ -401,6 +423,9 @@ $(document)
 	},'text');
 	return false;	
 })
+.on('click','#logout',function(){
+		alert('로그아웃 되었습니다');
+	})
 </script>
 </html>
 

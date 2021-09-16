@@ -8,7 +8,7 @@
 </head>
 <style>
 body {
-	background-image:url('https://cdn.pixabay.com/photo/2020/01/14/22/46/alps-4766515_960_720.jpg');
+	background-image:url('https://cdn.pixabay.com/photo/2021/03/15/10/56/daffodils-6096727_960_720.jpg');
 	background-repeat:no-repeat;
 	background-size:100%;	
 }
@@ -40,7 +40,7 @@ h3 {
 </style>
 <body>
 	<div id="intro">
-		<h1>HUMAN호텔 이용객 회원가입</h1>
+		<h1>HUMAN호텔 회원가입</h1>
 	</div>
 	<div id="new">
 		<h3>회원정보입력</h3>
@@ -104,6 +104,9 @@ $(document)
 			$('#nbpwcheck').val('');
 			return false;
 		} 
+})
+.on('submit','#newbi',function(){
+	alert("회원가입에 성공했습니다");
 })
 
 </script>
